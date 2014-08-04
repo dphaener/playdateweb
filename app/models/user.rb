@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+  has_many :groups, :through => :user_groups
+
   attr_accessor :password
 
   before_save do
@@ -10,8 +12,8 @@ class User < ActiveRecord::Base
   validates :email, presence: true, uniqueness: true
   validates_presence_of :password, :on => :create, :if => :password_validatible?
 
-  def self.authenticate_user!(username, password)
-    user = find_by_username(username)
+  def self.authenticate_user!(email, password)
+    user = find_by_email(email)
     if user && user.password_hash == BCrypt::Engine.hash_secret(password, user.password_salt)
       user
     else
